@@ -147,12 +147,11 @@
 .hamburger-inner,
 .hamburger-inner::before,
 .hamburger-inner::after {
-  color: black;
+  background-color: #d7ffc2;
 }
 
 .hamburger.is-active .hamburger-inner,
 .hamburger.is-active .hamburger-inner::before,
 .hamburger.is-active .hamburger-inner::after {
   background-color: #fffffe;
-  color: black;
 }

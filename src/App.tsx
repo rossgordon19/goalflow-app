@@ -8,13 +8,13 @@ import Dashboard from './components/Dashboard';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyDIAnGsZ1zUsKD219jG2GUfgf4XAbGVZAE',
-  authDomain: 'goal-flow-7491e.firebaseapp.com',
-  projectId: 'goal-flow-7491e',
-  storageBucket: 'goal-flow-7491e.appspot.com',
-  messagingSenderId: '684939875728',
-  appId: '1:684939875728:web:7c9ae14f897c3191198f15',
-  measurementId: 'G-0VQ3Y6GTDP',
+  apiKey: "AIzaSyA-GgSk7nHSY5cyCK_dEwoY3hD851nodmc",
+  authDomain: "goal-flow-afba9.firebaseapp.com",
+  projectId: "goal-flow-afba9",
+  storageBucket: "goal-flow-afba9.appspot.com",
+  messagingSenderId: "400278466881",
+  appId: "1:400278466881:web:caf551a09942e46cef71c0",
+  measurementId: "G-T3Q2KSH7FD"
 };
 
 // Initialize Firebase

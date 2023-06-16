@@ -53,7 +53,7 @@ const Navbar = ({ user }) => {
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#fff] text-[#000]">
+    <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]">
       <div className="flex justify-between w-full">
         {/* Left side */}
         <div className="flex items-center">
@@ -80,7 +80,7 @@ const Navbar = ({ user }) => {
       </div>
 
       {/* Hamburger Menu */}
-      <div onClick={handleClick} className="z-10 text-[#03071e] md:hidden">
+      <div onClick={handleClick} className="z-10 md:hidden">
         {!nav ? (
           <button className="hamburger hamburger-vortex" type="button">
             <span className="hamburger-box">
@@ -104,7 +104,7 @@ const Navbar = ({ user }) => {
         className={
           !nav
             ? 'hidden'
-            : 'absolute text-2xl top-0 left-0 w-full h-screen bg-[#000000] text-[#fff] flex flex-col justify-center items-center'
+            : 'absolute text-2xl top-0 left-0 w-full h-screen bg-[#004449] text-[#d7ffc2] flex flex-col justify-center items-center'
         }
       >
         {user ? (
