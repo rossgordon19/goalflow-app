@@ -1,25 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import { initializeApp } from 'firebase/app';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Dashboard from './components/Dashboard';
+import { Firestore, getFirestore } from 'firebase/firestore';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA-GgSk7nHSY5cyCK_dEwoY3hD851nodmc",
-  authDomain: "goal-flow-afba9.firebaseapp.com",
-  projectId: "goal-flow-afba9",
-  storageBucket: "goal-flow-afba9.appspot.com",
-  messagingSenderId: "400278466881",
-  appId: "1:400278466881:web:caf551a09942e46cef71c0",
-  measurementId: "G-T3Q2KSH7FD"
+  apiKey: 'AIzaSyAlNLiKVwXmYM-OWWky5ehPP3kjm7NZMJo',
+  authDomain: 'goal-flow-aba61.firebaseapp.com',
+  projectId: 'goal-flow-aba61',
+  storageBucket: 'goal-flow-aba61.appspot.com',
+  messagingSenderId: '677276282393',
+  appId: '1:677276282393:web:eaaf3de532002c815fc488',
+  measurementId: 'G-07ZZC9ES7Q',
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+export const db = getFirestore(app)
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
