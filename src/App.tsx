@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Dashboard from './components/Dashboard';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyAlNLiKVwXmYM-OWWky5ehPP3kjm7NZMJo',

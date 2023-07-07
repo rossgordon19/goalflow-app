@@ -14,6 +14,7 @@ import {
   faPlus,
   faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
+import { getAuth } from 'firebase/auth';
 
 const Dashboard: React.FC = () => {
   const [newGoal, setNewGoal] = useState('');
@@ -24,44 +25,60 @@ const Dashboard: React.FC = () => {
   const [editingGoalName, setEditingGoalName] = useState('');
 
   const usersCollectionRef = collection(db, 'goals');
+  const auth = getAuth();
 
   // Create Goal
   const handleAddGoal = async () => {
-    const docRef = await addDoc(usersCollectionRef, {
-      name: newGoal,
-      completed: false,
-    });
-    const createdGoal = { id: docRef.id, name: newGoal, completed: false };
-    setGoals((prevGoals) => [...prevGoals, createdGoal]);
-    setNewGoal('');
+    const user = auth.currentUser;
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const goalsCollectionRef = collection(userDocRef, 'goals');
+      const docRef = await addDoc(goalsCollectionRef, {
+        name: newGoal,
+        completed: false,
+      });
+      const createdGoal = { id: docRef.id, name: newGoal, completed: false };
+      setGoals((prevGoals) => [...prevGoals, createdGoal]);
+      setNewGoal('');
+    }
   };
 
   // Read Goal
   useEffect(() => {
     const getGoals = async () => {
-      const querySnapshot = await getDocs(usersCollectionRef);
-      const data: { id: string; name: string; completed: boolean }[] =
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          name: doc.data().name,
-          completed: doc.data().completed,
-        }));
-      setGoals(data);
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(db, 'users', user.uid);
+        const goalsCollectionRef = collection(userDocRef, 'goals');
+        const querySnapshot = await getDocs(goalsCollectionRef);
+        const data: { id: string; name: string; completed: boolean }[] = querySnapshot.docs.map(
+          (doc) => ({
+            id: doc.id,
+            name: doc.data().name,
+            completed: doc.data().completed,
+          })
+        );
+        setGoals(data);
+      }
     };
 
     getGoals();
-  }, []);
+  }, [auth]);
 
   // Update Goal
   const updateGoal = async (goalId: string) => {
-    const goalRef = doc(db, 'goals', goalId);
-    await updateDoc(goalRef, { name: editingGoalName });
-    setGoals((prevGoals) =>
-      prevGoals.map((goal) =>
-        goal.id === goalId ? { ...goal, name: editingGoalName } : goal
-      )
-    );
-    setEditingGoalId(null);
+    const user = auth.currentUser;
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const goalRef = doc(userDocRef, 'goals', goalId);
+      await updateDoc(goalRef, { name: editingGoalName });
+      setGoals((prevGoals) =>
+        prevGoals.map((goal) =>
+          goal.id === goalId ? { ...goal, name: editingGoalName } : goal
+        )
+      );
+      setEditingGoalId(null);
+    }
   };
 
   // Delete Goal
