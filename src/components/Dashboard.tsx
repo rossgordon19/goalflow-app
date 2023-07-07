@@ -1,31 +1,74 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from 'firebase/firestore';
 import { db } from '../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrashAlt,
+  faPlus,
+  faPenToSquare,
+} from '@fortawesome/free-solid-svg-icons';
 
 const Dashboard: React.FC = () => {
-  const [goals, setGoals] = useState<{ id: string; name: string }[]>([]);
+  const [newGoal, setNewGoal] = useState('');
+  const [goals, setGoals] = useState<
+    { id: string; name: string; completed: boolean }[]
+  >([]);
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+  const [editingGoalName, setEditingGoalName] = useState('');
+
   const usersCollectionRef = collection(db, 'goals');
 
+  // Create Goal
+  const handleAddGoal = async () => {
+    const docRef = await addDoc(usersCollectionRef, {
+      name: newGoal,
+      completed: false,
+    });
+    const createdGoal = { id: docRef.id, name: newGoal, completed: false };
+    setGoals((prevGoals) => [...prevGoals, createdGoal]);
+    setNewGoal('');
+  };
+
+  // Read Goal
   useEffect(() => {
     const getGoals = async () => {
-      const data = await getDocs(usersCollectionRef);
-      console.log(data); // Check the fetched data in the browser console
-      setGoals(data.docs.map((doc) => ({ id: doc.id, name: doc.data().name })));
+      const querySnapshot = await getDocs(usersCollectionRef);
+      const data: { id: string; name: string; completed: boolean }[] =
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+          completed: doc.data().completed,
+        }));
+      setGoals(data);
     };
 
     getGoals();
   }, []);
 
-  const handleDeleteGoal = (goalId: string) => {
-    // Implement delete functionality here
-    console.log(`Deleting goal with ID: ${goalId}`);
+  // Update Goal
+  const updateGoal = async (goalId: string) => {
+    const goalRef = doc(db, 'goals', goalId);
+    await updateDoc(goalRef, { name: editingGoalName });
+    setGoals((prevGoals) =>
+      prevGoals.map((goal) =>
+        goal.id === goalId ? { ...goal, name: editingGoalName } : goal
+      )
+    );
+    setEditingGoalId(null);
   };
 
-  const handleAddGoal = () => {
-    // Implement add goal functionality here
-    console.log('Adding a new goal');
+  // Delete Goal
+  const handleDeleteGoal = async (goalId: string) => {
+    await deleteDoc(doc(db, 'goals', goalId));
+    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+    console.log(`Deleting goal with ID: ${goalId}`);
   };
 
   return (
@@ -36,13 +79,59 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded shadow-md p-4 w-full max-w-md">
         <ul className="space-y-2">
           {goals.map((goal) => (
-            <li key={goal.id} className="flex items-center justify-between">
-              <input type="checkbox" className="mr-2" />
-              <span className="flex-grow">{goal.name}</span>
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                onClick={() => handleDeleteGoal(goal.id)}
-              />
+            <li
+              key={goal.id}
+              className={`flex items-center justify-between ${
+                goal.completed ? 'line-through text-gray-400' : ''
+              }`}
+            >
+              {editingGoalId === goal.id ? (
+                <>
+                  <input
+                    type="text"
+                    value={editingGoalName}
+                    onChange={(e) => setEditingGoalName(e.target.value)}
+                    className="flex-grow py-2 px-4 border border-gray-300 rounded-l mr-2"
+                  />
+                  <button
+                    className="flex items-center justify-center"
+                    onClick={() => updateGoal(goal.id)}
+                  >
+                    <span
+                      className="checkmark"
+                      onClick={() => updateGoal(goal.id)}
+                    >
+                      {'\u2713'}
+                    </span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={goal.completed}
+                    onChange={() => updateGoal(goal.id)}
+                  />
+                  <span className="flex-grow">{goal.name}</span>
+                  <button>
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className="mr-2"
+                      onClick={() => {
+                        setEditingGoalId(goal.id);
+                        setEditingGoalName(goal.name);
+                      }}
+                    />
+                  </button>
+                  <button>
+                    <FontAwesomeIcon
+                      icon={faTrashAlt}
+                      onClick={() => handleDeleteGoal(goal.id)}
+                    />
+                  </button>
+                </>
+              )}
             </li>
           ))}
         </ul>
@@ -51,6 +140,10 @@ const Dashboard: React.FC = () => {
             type="text"
             placeholder="Add Goal"
             className="py-2 px-4 border border-gray-300 rounded-l mr-2"
+            value={newGoal}
+            onChange={(event) => {
+              setNewGoal(event.target.value);
+            }}
           />
           <button
             className="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-r hover:bg-blue-600"
