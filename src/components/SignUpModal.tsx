@@ -9,9 +9,9 @@ const Spinner = () => {
 };
 
 const SignUpModal = ({ isOpen, closeModal }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,7 +26,7 @@ const SignUpModal = ({ isOpen, closeModal }) => {
     setLoading(true);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -50,20 +50,12 @@ const SignUpModal = ({ isOpen, closeModal }) => {
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
-        <span
-          className="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true"
-        >
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
 
-        <div
-          className="inline-block align-bottom bg-[#004449] text-[#d7ffc2] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-headline"
-        >
-          <div className="bg-[#004449] px-4 pt-5 pb-4 sm:p-6 sm:pb-4 flex flex-col items-center">
+        <div className="inline-block align-bottom bg-[#004449] text-[#d7ffc2] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div className="bg-[#004449] px-4 pt-5 pb-6 sm:p-6 sm:pb-6 flex flex-col items-center">
             <button
               onClick={closeModal}
               className="ml-auto bg-transparent border-0 text-[#d7ffc2] hover:text-gray-700"
@@ -72,13 +64,10 @@ const SignUpModal = ({ isOpen, closeModal }) => {
               <span className="sr-only">Close modal</span>
               <span aria-hidden="true">X</span>
             </button>
-            <h3
-              className="text-lg leading-6 font-medium text-[#d7ffc2]"
-              id="modal-headline"
-            >
+            <h3 className="text-lg leading-6 font-medium text-[#d7ffc2]" id="modal-headline">
               Sign Up to GoalFlow
             </h3>
-            <form className="mt-2 w-64" onSubmit={signUpWithEmailPassword}>
+            <form className="mt-4 w-64" onSubmit={signUpWithEmailPassword}>
               <input
                 className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
                 type="email"
@@ -111,7 +100,7 @@ const SignUpModal = ({ isOpen, closeModal }) => {
                 className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center"
                 disabled={loading}
               >
-                {loading ? <Spinner /> : "Sign Up"}
+                {loading ? <Spinner /> : 'Sign Up'}
               </button>
             </form>
             {error && <p className="text-red-500 text-xs mt-2">{error}</p>}

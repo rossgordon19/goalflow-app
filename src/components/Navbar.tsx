@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
+import Logo from '../assets/logo.png';
 import '../hamburgers.css';
 
 const Navbar = ({ user }) => {
@@ -12,6 +14,7 @@ const Navbar = ({ user }) => {
   const [password, setPassword] = useState('');
 
   const auth = getAuth();
+  const navigate = useNavigate();
 
   const handleClick = () => {
     setNav(!nav);
@@ -39,6 +42,7 @@ const Navbar = ({ user }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setLoginModalOpen(false);
+      navigate('/dashboard');
     } catch (error) {
       console.error(error);
     }
@@ -47,9 +51,14 @@ const Navbar = ({ user }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const navigateToHero = () => {
+    navigate('/hero');
   };
 
   return (
@@ -57,21 +66,44 @@ const Navbar = ({ user }) => {
       <div className="flex justify-between w-full">
         {/* Left side */}
         <div className="flex items-center">
-          <h1 className="font-bold text-xl">Logo</h1>
+          <div className="text-[#d7ffc2]">
+            <img
+              src={Logo}
+              alt="GoalFlow - Your Future Starts Here."
+              onClick={navigateToHero}
+              style={{ cursor: 'pointer' }}
+            />
+          </div>
         </div>
 
         {/* Right side */}
-        <ul className="hidden md:flex space-x-4 text-2xl items-center">
+        <ul className="hidden md:flex space-x-4 text-xl items-center">
           {user ? (
-            <li className="hover:underline" onClick={handleLogout}>
-              Log Out
-            </li>
+            <>
+              <li>
+                <Link to="/dashboard" className="cursor-pointer hover:underline">
+                  Dashboard
+                </Link>
+              </li>
+              <li
+                className="cursor-pointer hover:underline"
+                onClick={handleLogout}
+              >
+                Log Out
+              </li>
+            </>
           ) : (
             <>
-              <li className="hover:underline" onClick={openLoginModal}>
+              <li
+                className="cursor-pointer hover:underline"
+                onClick={openLoginModal}
+              >
                 Log In
               </li>
-              <li className="hover:underline" onClick={openSignUpModal}>
+              <li
+                className="cursor-pointer hover:underline"
+                onClick={openSignUpModal}
+              >
                 Sign Up
               </li>
             </>
@@ -81,22 +113,11 @@ const Navbar = ({ user }) => {
 
       {/* Hamburger Menu */}
       <div onClick={handleClick} className="z-10 md:hidden">
-        {!nav ? (
-          <button className="hamburger hamburger-vortex" type="button">
-            <span className="hamburger-box">
-              <span className="hamburger-inner"></span>
-            </span>
-          </button>
-        ) : (
-          <button
-            className="hamburger hamburger--vortex is-active"
-            type="button"
-          >
-            <span className="hamburger-box">
-              <span className="hamburger-inner"></span>
-            </span>
-          </button>
-        )}
+        <button className={`hamburger hamburger--vortex ${nav ? 'is-active' : ''}`} type="button">
+          <span className="hamburger-box">
+            <span className="hamburger-inner"></span>
+          </span>
+        </button>
       </div>
 
       {/* Mobile Menu */}
@@ -108,22 +129,29 @@ const Navbar = ({ user }) => {
         }
       >
         {user ? (
-          <li
-            className="py-6 text-5xl hover:scale-110 cursor-pointer transform transition"
-            onClick={handleLogout}
-          >
-            Log Out
-          </li>
+          <>
+            <li className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition">
+              <Link to="/dashboard" className="cursor-pointer hover:underline">
+                Dashboard
+              </Link>
+            </li>
+            <li
+              className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
+              onClick={handleLogout}
+            >
+              Log Out
+            </li>
+          </>
         ) : (
           <>
             <li
-              className="py-6 text-5xl hover:scale-110 cursor-pointer transform transition"
+              className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={openLoginModal}
             >
               Log In
             </li>
             <li
-              className="py-6 text-5xl hover:scale-110 cursor-pointer transform transition"
+              className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={openSignUpModal}
             >
               Sign Up

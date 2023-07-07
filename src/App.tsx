@@ -1,24 +1,31 @@
 import { useState, useEffect } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes
+} from 'react-router-dom';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import About from './components/About';
 import Dashboard from './components/Dashboard';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAlNLiKVwXmYM-OWWky5ehPP3kjm7NZMJo',
-  authDomain: 'goal-flow-aba61.firebaseapp.com',
-  projectId: 'goal-flow-aba61',
-  storageBucket: 'goal-flow-aba61.appspot.com',
-  messagingSenderId: '677276282393',
-  appId: '1:677276282393:web:eaaf3de532002c815fc488',
-  measurementId: 'G-07ZZC9ES7Q',
+  apiKey: import.meta.env.VITE_APP_API_KEY,
+  authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_APP_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_APP_ID,
+  measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
 };
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app)
+export const db = getFirestore(app);
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -33,10 +40,22 @@ function App() {
   }, [auth]);
 
   return (
-    <>
+    <Router>
       <Navbar user={user} />
-      {!user ? <Hero /> : <Dashboard />}
-    </>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <About />
+            </>
+          }
+        />
+        <Route path="/hero" element={<Hero />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 

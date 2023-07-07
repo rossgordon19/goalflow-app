@@ -6,6 +6,7 @@ import {
   updateDoc,
   doc,
   deleteDoc,
+  getDoc,
 } from 'firebase/firestore';
 import { db } from '../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -51,13 +52,13 @@ const Dashboard: React.FC = () => {
         const userDocRef = doc(db, 'users', user.uid);
         const goalsCollectionRef = collection(userDocRef, 'goals');
         const querySnapshot = await getDocs(goalsCollectionRef);
-        const data: { id: string; name: string; completed: boolean }[] = querySnapshot.docs.map(
-          (doc) => ({
+        const data: { id: string; name: string; completed: boolean }[] = querySnapshot.docs
+          .map((doc) => ({
             id: doc.id,
             name: doc.data().name,
             completed: doc.data().completed,
-          })
-        );
+          }))
+          .filter((goal) => !goal.completed); // Exclude completed goals
         setGoals(data);
       }
     };
@@ -71,21 +72,52 @@ const Dashboard: React.FC = () => {
     if (user) {
       const userDocRef = doc(db, 'users', user.uid);
       const goalRef = doc(userDocRef, 'goals', goalId);
-      await updateDoc(goalRef, { name: editingGoalName });
+      const goalSnapshot = await getDoc(goalRef);
+      const completed = goalSnapshot.data()?.completed;
+
+      // Update the completed status of the goal
+      await updateDoc(goalRef, { completed: !completed });
+
       setGoals((prevGoals) =>
         prevGoals.map((goal) =>
-          goal.id === goalId ? { ...goal, name: editingGoalName } : goal
+          goal.id === goalId ? { ...goal, completed: !completed } : goal
         )
       );
-      setEditingGoalId(null);
     }
   };
 
   // Delete Goal
   const handleDeleteGoal = async (goalId: string) => {
-    await deleteDoc(doc(db, 'goals', goalId));
-    setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
-    console.log(`Deleting goal with ID: ${goalId}`);
+    const user = auth.currentUser;
+    if (user) {
+      const goalRef = doc(db, 'users', user.uid, 'goals', goalId);
+      await deleteDoc(goalRef);
+      setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
+      console.log(`Deleting goal with ID: ${goalId}`);
+    }
+  };
+
+  // Edit Goal
+  const handleEditGoal = (goalId: string, goalName: string) => {
+    setEditingGoalId(goalId);
+    setEditingGoalName(goalName);
+  };
+
+  // Save Edited Goal
+  const saveEditedGoal = async () => {
+    const user = auth.currentUser;
+    if (user && editingGoalId) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const goalRef = doc(userDocRef, 'goals', editingGoalId);
+      await updateDoc(goalRef, { name: editingGoalName });
+      setGoals((prevGoals) =>
+        prevGoals.map((goal) =>
+          goal.id === editingGoalId ? { ...goal, name: editingGoalName } : goal
+        )
+      );
+      setEditingGoalId(null);
+      setEditingGoalName('');
+    }
   };
 
   return (
@@ -102,6 +134,12 @@ const Dashboard: React.FC = () => {
                 goal.completed ? 'line-through text-gray-400' : ''
               }`}
             >
+              <input
+                type="checkbox"
+                className="mr-2"
+                checked={goal.completed}
+                onChange={() => updateGoal(goal.id)}
+              />
               {editingGoalId === goal.id ? (
                 <>
                   <input
@@ -112,11 +150,11 @@ const Dashboard: React.FC = () => {
                   />
                   <button
                     className="flex items-center justify-center"
-                    onClick={() => updateGoal(goal.id)}
+                    onClick={saveEditedGoal}
                   >
                     <span
                       className="checkmark"
-                      onClick={() => updateGoal(goal.id)}
+                      onClick={saveEditedGoal}
                     >
                       {'\u2713'}
                     </span>
@@ -124,21 +162,12 @@ const Dashboard: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={goal.completed}
-                    onChange={() => updateGoal(goal.id)}
-                  />
                   <span className="flex-grow">{goal.name}</span>
                   <button>
                     <FontAwesomeIcon
                       icon={faPenToSquare}
                       className="mr-2"
-                      onClick={() => {
-                        setEditingGoalId(goal.id);
-                        setEditingGoalName(goal.name);
-                      }}
+                      onClick={() => handleEditGoal(goal.id, goal.name)}
                     />
                   </button>
                   <button>
