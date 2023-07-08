@@ -57,22 +57,19 @@ const Navbar = ({ user }) => {
     }
   };
 
-  const navigateToHero = () => {
-    navigate('/hero');
-  };
-
   return (
     <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]">
       <div className="flex justify-between w-full">
         {/* Left side */}
         <div className="flex items-center">
           <div className="text-[#d7ffc2]">
-            <img
-              src={Logo}
-              alt="GoalFlow - Your Future Starts Here."
-              onClick={navigateToHero}
-              style={{ cursor: 'pointer' }}
-            />
+            <Link to="/">
+              <img
+                src={Logo}
+                alt="GoalFlow - Your Future Starts Here."
+                style={{ cursor: 'pointer' }}
+              />
+            </Link>
           </div>
         </div>
 
