@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   getAuth,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import GoogleButton from 'react-google-button';
 import { useNavigate } from 'react-router-dom';
@@ -27,9 +28,7 @@ const LoginModal = ({ isOpen, closeModal }) => {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, provider);
-      closeModal();
-      navigate('/dashboard'); // Redirect to dashboard after successful Google Sign-In
+      await signInWithRedirect(auth, provider); // Use signInWithRedirect instead of signInWithPopup
     } catch (error) {
       setError(error.message);
     }
@@ -57,6 +56,17 @@ const LoginModal = ({ isOpen, closeModal }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        closeModal();
+        navigate('/dashboard'); // Redirect to dashboard after successful sign-in
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth, closeModal, navigate]);
 
   if (!isOpen) return null;
 
