@@ -13,6 +13,7 @@ import About from './components/About';
 import Dashboard from './components/Dashboard';
 import { getFirestore } from 'firebase/firestore';
 import Footer from './components/Footer';
+import ReactLoading from 'react-loading';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_API_KEY,
@@ -30,11 +31,13 @@ export const db = getFirestore(app);
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setAuthInitialized(true);
     });
 
     return () => unsubscribe();
@@ -43,22 +46,36 @@ function App() {
   return (
     <Router>
       <Navbar user={user} />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Hero />
-              <About />
-            </>
-          }
-        />
-        <Route path="/hero" element={<Hero />} />
-        <Route
-          path="/dashboard"
-          element={user ? <Dashboard /> : <Navigate to="/" />}
-        />
-      </Routes>
+      {authInitialized ? (
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <About />
+              </>
+            }
+          />
+          <Route path="/hero" element={<Hero />} />
+          <Route
+            path="/dashboard"
+            element={user ? <Dashboard /> : <Navigate to="/" />}
+          />
+        </Routes>
+      ) : (
+        <div
+          className="flex justify-center items-center h-screen"
+          style={{ backgroundColor: '#004449' }}
+        >
+          <ReactLoading
+            type={'spin'}
+            color={'#fff'}
+            height={'20%'}
+            width={'20%'}
+          />
+        </div>
+      )}
       <Footer />
     </Router>
   );
