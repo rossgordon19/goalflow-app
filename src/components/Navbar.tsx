@@ -3,7 +3,7 @@ import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
-import '../hamburgers.css'
+import '../hamburgers.css';
 
 const Navbar = ({ user }) => {
   const [nav, setNav] = useState(false);
@@ -50,6 +50,7 @@ const Navbar = ({ user }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      if (window.innerWidth < 768) handleClick(); // Modified here
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -64,6 +65,11 @@ const Navbar = ({ user }) => {
     }
   };
 
+  const handleNavClick = (route) => {
+    if (window.innerWidth < 768) handleClick(); // Modified here
+    navigate(route);
+  };
+
   return (
     <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]">
       <div className="flex justify-between w-full">
@@ -71,50 +77,27 @@ const Navbar = ({ user }) => {
         <div className="flex items-center">
           <div className="text-[#d7ffc2]">
             <Link to="/">
-              <h1
-                id="navlogo"
+              <div
                 className="font-bold text-3xl cursor-pointer"
                 onClick={handleLogoClick}
               >
                 GoalFlow
-              </h1>
+              </div>
             </Link>
           </div>
         </div>
 
         {/* Right side */}
-        <ul className="hidden md:flex space-x-4 text-xl items-center">
+        <ul className="hidden md:flex space-x-4 text-xl items-center cursor-pointer">
           {user ? (
             <>
-              <li>
-                <Link
-                  to="/dashboard"
-                  className="cursor-pointer hover:underline"
-                >
-                  Dashboard
-                </Link>
-              </li>
-              <li
-                className="cursor-pointer hover:underline"
-                onClick={handleLogout}
-              >
-                Log Out
-              </li>
+              <li onClick={() => handleNavClick('/dashboard')}>Dashboard</li>
+              <li onClick={handleLogout}>Log Out</li>
             </>
           ) : (
             <>
-              <li
-                className="cursor-pointer hover:underline"
-                onClick={openLoginModal}
-              >
-                Log In
-              </li>
-              <li
-                className="cursor-pointer hover:underline"
-                onClick={openSignUpModal}
-              >
-                Sign Up
-              </li>
+              <li onClick={openLoginModal}>Log In</li>
+              <li onClick={openSignUpModal}>Sign Up</li>
             </>
           )}
         </ul>
@@ -142,10 +125,11 @@ const Navbar = ({ user }) => {
       >
         {user ? (
           <>
-            <li className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition">
-              <Link to="/dashboard" className="cursor-pointer hover:underline">
-                Dashboard
-              </Link>
+            <li
+              className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
+              onClick={() => handleNavClick('/dashboard')}
+            >
+              Dashboard
             </li>
             <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
