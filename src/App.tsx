@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
+  Routes,
   Route,
-  Routes
+  Navigate,
 } from 'react-router-dom';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
@@ -22,7 +23,6 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_APP_APP_ID,
   measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
 };
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -54,7 +54,10 @@ function App() {
           }
         />
         <Route path="/hero" element={<Hero />} />
-        {user ? <Route path="/dashboard" element={<Dashboard />} /> : null}
+        <Route
+          path="/dashboard"
+          element={user ? <Dashboard /> : <Navigate to="/" />}
+        />
       </Routes>
       <Footer />
     </Router>
