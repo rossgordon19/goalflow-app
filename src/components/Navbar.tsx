@@ -5,7 +5,8 @@ import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
 import '../hamburgers.css';
 
-const Navbar = ({ user, nav, setNav }) => {
+const Navbar = ({ user }) => {
+  const [nav, setNav] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
   const [email, setEmail] = useState('');
@@ -36,11 +37,10 @@ const Navbar = ({ user, nav, setNav }) => {
 
   const handleEmailPasswordSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       setLoginModalOpen(false);
-      if (nav) handleClick();
       navigate('/dashboard');
     } catch (error) {
       console.error(error);
@@ -50,7 +50,7 @@ const Navbar = ({ user, nav, setNav }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      if (nav) handleClick();
+      if (window.innerWidth < 768) handleClick(); // Modified here
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -66,7 +66,7 @@ const Navbar = ({ user, nav, setNav }) => {
   };
 
   const handleNavClick = (route) => {
-    if (nav) handleClick();
+    if (window.innerWidth < 768) handleClick(); // Modified here
     navigate(route);
   };
 
@@ -156,7 +156,7 @@ const Navbar = ({ user, nav, setNav }) => {
         )}
       </ul>
 
-      <LoginModal isOpen={isLoginModalOpen} closeModal={closeLoginModal} handleEmailPasswordSubmit={handleEmailPasswordSubmit} setEmail={setEmail} setPassword={setPassword} />
+      <LoginModal isOpen={isLoginModalOpen} closeModal={closeLoginModal} />
       <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} />
     </div>
   );

@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes
+} from 'react-router-dom';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import Navbar from './components/Navbar';
@@ -19,19 +23,18 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [nav, setNav] = useState(false);  // moved nav state up to App.tsx
   const auth = getAuth();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      setNav(false);  // reset nav state every time user state changes
     });
 
     return () => unsubscribe();
@@ -39,7 +42,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar user={user} nav={nav} setNav={setNav} />
+      <Navbar user={user} />
       <Routes>
         <Route
           path="/"
