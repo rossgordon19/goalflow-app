@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   getAuth,
   signInWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
 } from 'firebase/auth';
 import GoogleButton from 'react-google-button';
 import { useNavigate } from 'react-router-dom';
@@ -27,9 +28,8 @@ const LoginModal = ({ isOpen, closeModal }) => {
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, provider);
-      closeModal();
-      navigate('/dashboard'); // Redirect to dashboard after successful Google Sign-In
+      await signInWithRedirect(auth, provider);
+      // No need to close the modal or redirect here
     } catch (error) {
       setError(error.message);
     }
@@ -57,6 +57,20 @@ const LoginModal = ({ isOpen, closeModal }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handleRedirectAuth = async () => {
+      try {
+        await getRedirectResult(auth);
+        closeModal();
+        navigate('/dashboard'); // Redirect to dashboard after successful Google Sign-In
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    handleRedirectAuth();
+  }, []);
 
   if (!isOpen) return null;
 
