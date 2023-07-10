@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   getAuth,
@@ -7,6 +7,7 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import GoogleButton from 'react-google-button';
+import { useNavigate } from 'react-router-dom';
 
 const Spinner = () => {
   return (
@@ -22,11 +23,13 @@ const LoginModal = ({ isOpen, closeModal }) => {
 
   const auth = getAuth();
   const provider = new GoogleAuthProvider();
+  const navigate = useNavigate(); // Add useNavigate hook
 
   const signInWithGoogle = async () => {
     try {
       await signInWithPopup(auth, provider);
       closeModal();
+      navigate('/dashboard'); // Redirect to dashboard after successful Google Sign-In
     } catch (error) {
       setError(error.message);
     }
@@ -47,6 +50,7 @@ const LoginModal = ({ isOpen, closeModal }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       closeModal();
+      navigate('/dashboard'); // Redirect to dashboard after successful login
     } catch (error) {
       setError(error.message);
     } finally {
@@ -72,7 +76,10 @@ const LoginModal = ({ isOpen, closeModal }) => {
             <span className="sr-only">Close modal</span>
             <span aria-hidden="true">X</span>
           </button>
-          <h3 className="text-lg leading-6 font-medium text-[#d7ffc2]" id="modal-headline">
+          <h3
+            className="text-lg leading-6 font-medium text-[#d7ffc2]"
+            id="modal-headline"
+          >
             Log in to GoalFlow
           </h3>
           <form className="mt-4 w-64" onSubmit={handleEmailPasswordSubmit}>

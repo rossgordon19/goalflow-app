@@ -3,8 +3,6 @@ import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
-import Logo from '../assets/logo.png';
-import '../hamburgers.css';
 
 const Navbar = ({ user }) => {
   const [nav, setNav] = useState(false);
@@ -57,6 +55,14 @@ const Navbar = ({ user }) => {
     }
   };
 
+  const handleLogoClick = () => {
+    if (user !== null) {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]">
       <div className="flex justify-between w-full">
@@ -64,11 +70,13 @@ const Navbar = ({ user }) => {
         <div className="flex items-center">
           <div className="text-[#d7ffc2]">
             <Link to="/">
-              <img
-                src={Logo}
-                alt="GoalFlow - Your Future Starts Here."
-                style={{ cursor: 'pointer' }}
-              />
+              <h1
+                id="navlogo"
+                className="font-bold text-3xl cursor-pointer"
+                onClick={handleLogoClick}
+              >
+                GoalFlow
+              </h1>
             </Link>
           </div>
         </div>
@@ -78,7 +86,10 @@ const Navbar = ({ user }) => {
           {user ? (
             <>
               <li>
-                <Link to="/dashboard" className="cursor-pointer hover:underline">
+                <Link
+                  to="/dashboard"
+                  className="cursor-pointer hover:underline"
+                >
                   Dashboard
                 </Link>
               </li>
@@ -110,7 +121,10 @@ const Navbar = ({ user }) => {
 
       {/* Hamburger Menu */}
       <div onClick={handleClick} className="z-10 md:hidden">
-        <button className={`hamburger hamburger--vortex ${nav ? 'is-active' : ''}`} type="button">
+        <button
+          className={`hamburger hamburger--vortex ${nav ? 'is-active' : ''}`}
+          type="button"
+        >
           <span className="hamburger-box">
             <span className="hamburger-inner"></span>
           </span>

@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow&family=Belanosima:wght@600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,4 +7,8 @@
 
 * {
     font-family: 'Barlow', sans-serif;
+}
+
+#navlogo {
+    font-family: 'Belanosima', sans-serif;
 }

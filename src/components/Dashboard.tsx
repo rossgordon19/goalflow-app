@@ -10,25 +10,21 @@ import {
 } from 'firebase/firestore';
 import { db } from '../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faTrashAlt,
-  faPlus,
-  faPenToSquare,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPen, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { getAuth } from 'firebase/auth';
 
 const Dashboard: React.FC = () => {
   const [newGoal, setNewGoal] = useState('');
+  const [goalPeriod, setGoalPeriod] = useState('week');
   const [goals, setGoals] = useState<
-    { id: string; name: string; completed: boolean }[]
+    { id: string; name: string; completed: boolean; period: string }[]
   >([]);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editingGoalName, setEditingGoalName] = useState('');
+  const [loading, setLoading] = useState(true); // New state variable
 
-  const usersCollectionRef = collection(db, 'goals');
   const auth = getAuth();
 
-  // Create Goal
   const handleAddGoal = async () => {
     const user = auth.currentUser;
     if (user) {
@@ -36,37 +32,47 @@ const Dashboard: React.FC = () => {
       const goalsCollectionRef = collection(userDocRef, 'goals');
       const docRef = await addDoc(goalsCollectionRef, {
         name: newGoal,
+        period: goalPeriod,
         completed: false,
       });
-      const createdGoal = { id: docRef.id, name: newGoal, completed: false };
+      const createdGoal = {
+        id: docRef.id,
+        name: newGoal,
+        period: goalPeriod,
+        completed: false,
+      };
       setGoals((prevGoals) => [...prevGoals, createdGoal]);
       setNewGoal('');
     }
   };
 
-  // Read Goal
   useEffect(() => {
-    const getGoals = async () => {
-      const user = auth.currentUser;
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         const userDocRef = doc(db, 'users', user.uid);
         const goalsCollectionRef = collection(userDocRef, 'goals');
         const querySnapshot = await getDocs(goalsCollectionRef);
-        const data: { id: string; name: string; completed: boolean }[] = querySnapshot.docs
+        const data: {
+          id: string;
+          name: string;
+          completed: boolean;
+          period: string;
+        }[] = querySnapshot.docs
           .map((doc) => ({
             id: doc.id,
             name: doc.data().name,
             completed: doc.data().completed,
+            period: doc.data().period,
           }))
-          .filter((goal) => !goal.completed); // Exclude completed goals
+          .filter((goal) => !goal.completed);
         setGoals(data);
+        setLoading(false);
       }
-    };
+    });
 
-    getGoals();
+    return () => unsubscribe();
   }, [auth]);
 
-  // Update Goal
   const updateGoal = async (goalId: string) => {
     const user = auth.currentUser;
     if (user) {
@@ -75,7 +81,6 @@ const Dashboard: React.FC = () => {
       const goalSnapshot = await getDoc(goalRef);
       const completed = goalSnapshot.data()?.completed;
 
-      // Update the completed status of the goal
       await updateDoc(goalRef, { completed: !completed });
 
       setGoals((prevGoals) =>
@@ -86,24 +91,21 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Delete Goal
   const handleDeleteGoal = async (goalId: string) => {
     const user = auth.currentUser;
     if (user) {
-      const goalRef = doc(db, 'users', user.uid, 'goals', goalId);
+      const userDocRef = doc(db, 'users', user.uid);
+      const goalRef = doc(userDocRef, 'goals', goalId);
       await deleteDoc(goalRef);
       setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== goalId));
-      console.log(`Deleting goal with ID: ${goalId}`);
     }
   };
 
-  // Edit Goal
   const handleEditGoal = (goalId: string, goalName: string) => {
     setEditingGoalId(goalId);
     setEditingGoalName(goalName);
   };
 
-  // Save Edited Goal
   const saveEditedGoal = async () => {
     const user = auth.currentUser;
     if (user && editingGoalId) {
@@ -120,85 +122,209 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const weekGoals = goals.filter((goal) => goal.period === 'week');
+  const monthGoals = goals.filter((goal) => goal.period === 'month');
+  const yearGoals = goals.filter((goal) => goal.period === 'year');
+
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-[#004449] text-black">
       <h1 className="text-4xl font-bold mb-8 text-[#d7ffc2]">
         GoalFlow Dashboard
       </h1>
       <div className="bg-white rounded shadow-md p-4 w-full max-w-md">
-        <ul className="space-y-2">
-          {goals.map((goal) => (
-            <li
-              key={goal.id}
-              className={`flex items-center justify-between ${
-                goal.completed ? 'line-through text-gray-400' : ''
-              }`}
-            >
-              <input
-                type="checkbox"
-                className="mr-2"
-                checked={goal.completed}
-                onChange={() => updateGoal(goal.id)}
-              />
-              {editingGoalId === goal.id ? (
-                <>
-                  <input
-                    type="text"
-                    value={editingGoalName}
-                    onChange={(e) => setEditingGoalName(e.target.value)}
-                    className="flex-grow py-2 px-4 border border-gray-300 rounded-l mr-2"
-                  />
-                  <button
-                    className="flex items-center justify-center"
-                    onClick={saveEditedGoal}
-                  >
-                    <span
-                      className="checkmark"
-                      onClick={saveEditedGoal}
-                    >
-                      {'\u2713'}
-                    </span>
-                  </button>
-                </>
-              ) : (
-                <>
-                  <span className="flex-grow">{goal.name}</span>
-                  <button>
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      className="mr-2"
-                      onClick={() => handleEditGoal(goal.id, goal.name)}
-                    />
-                  </button>
-                  <button>
-                    <FontAwesomeIcon
-                      icon={faTrashAlt}
-                      onClick={() => handleDeleteGoal(goal.id)}
-                    />
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-        <div className="flex justify-center mt-4">
+        <div className="flex items-center mb-4">
           <input
             type="text"
-            placeholder="Add Goal"
-            className="py-2 px-4 border border-gray-300 rounded-l mr-2"
+            placeholder="Enter your goal here"
+            className="mr-2 p-2 flex-grow border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
             value={newGoal}
-            onChange={(event) => {
-              setNewGoal(event.target.value);
-            }}
+            onChange={(e) => setNewGoal(e.target.value)}
           />
+          <select
+            className="mr-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+            value={goalPeriod}
+            onChange={(e) => setGoalPeriod(e.target.value)}
+          >
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+          </select>
           <button
-            className="flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-r hover:bg-blue-600"
+            className="p-2 bg-[#004449]  text-white rounded hover:bg-[#0eff80] hover:text-black"
             onClick={handleAddGoal}
           >
-            <FontAwesomeIcon icon={faPlus} className="mr-2" />
-            Add Goal
+            Set Goal
           </button>
         </div>
+
+        {loading ? (
+          <p className="text-center text-xl text-gray-600">Loading...</p>
+        ) : goals.length === 0 ? (
+          <p className="text-center text-xl text-gray-600">
+            You currently have no set goals.
+          </p>
+        ) : (
+          <>
+            <h2 className="font-bold text-2xl">This Week:</h2>
+            <ul className="space-y-2">
+              {weekGoals.map((goal) => (
+                <li
+                  key={goal.id}
+                  className={`flex justify-between items-center p-2 ${
+                    goal.completed ? 'line-through' : ''
+                  }`}
+                >
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={goal.completed}
+                      onChange={() => updateGoal(goal.id)}
+                      className="mr-2"
+                    />
+                    {editingGoalId === goal.id ? (
+                      <input
+                        type="text"
+                        value={editingGoalName}
+                        onChange={(e) => setEditingGoalName(e.target.value)}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <span>{goal.name}</span>
+                    )}
+                  </div>
+                  <div>
+                    {editingGoalId === goal.id ? (
+                      <button onClick={saveEditedGoal}>
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEditGoal(goal.id, goal.name)}
+                      >
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faPen} />
+                        </div>
+                      </button>
+                    )}
+                    <button onClick={() => handleDeleteGoal(goal.id)}>
+                      <div className="icon-container mr-4">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </div>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <h2 className="font-bold text-2xl">This Month:</h2>
+            <ul className="space-y-2">
+              {monthGoals.map((goal) => (
+                <li
+                  key={goal.id}
+                  className={`flex justify-between items-center p-2 ${
+                    goal.completed ? 'line-through' : ''
+                  }`}
+                >
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={goal.completed}
+                      onChange={() => updateGoal(goal.id)}
+                      className="mr-2"
+                    />
+                    {editingGoalId === goal.id ? (
+                      <input
+                        type="text"
+                        value={editingGoalName}
+                        onChange={(e) => setEditingGoalName(e.target.value)}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <span>{goal.name}</span>
+                    )}
+                  </div>
+                  <div>
+                    {editingGoalId === goal.id ? (
+                      <button onClick={saveEditedGoal}>
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEditGoal(goal.id, goal.name)}
+                      >
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faPen} />
+                        </div>
+                      </button>
+                    )}
+                    <button onClick={() => handleDeleteGoal(goal.id)}>
+                      <div className="icon-container mr-4">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </div>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <h2 className="font-bold text-2xl">This Year:</h2>
+            <ul className="space-y-2">
+              {yearGoals.map((goal) => (
+                <li
+                  key={goal.id}
+                  className={`flex justify-between items-center p-2 ${
+                    goal.completed ? 'line-through' : ''
+                  }`}
+                >
+                  <div>
+                    <input
+                      type="checkbox"
+                      checked={goal.completed}
+                      onChange={() => updateGoal(goal.id)}
+                      className="mr-2"
+                    />
+                    {editingGoalId === goal.id ? (
+                      <input
+                        type="text"
+                        value={editingGoalName}
+                        onChange={(e) => setEditingGoalName(e.target.value)}
+                        className="mr-2"
+                      />
+                    ) : (
+                      <span>{goal.name}</span>
+                    )}
+                  </div>
+                  <div>
+                    {editingGoalId === goal.id ? (
+                      <button onClick={saveEditedGoal}>
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faCheck} />
+                        </div>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEditGoal(goal.id, goal.name)}
+                      >
+                        <div className="icon-container mr-4">
+                          <FontAwesomeIcon icon={faPen} />
+                        </div>
+                      </button>
+                    )}
+                    <button onClick={() => handleDeleteGoal(goal.id)}>
+                      <div className="icon-container mr-4">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </div>
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </div>
   );

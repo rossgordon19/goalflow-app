@@ -11,6 +11,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import Dashboard from './components/Dashboard';
 import { getFirestore } from 'firebase/firestore';
+import Footer from './components/Footer';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_API_KEY,
@@ -53,8 +54,9 @@ function App() {
           }
         />
         <Route path="/hero" element={<Hero />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        {user ? <Route path="/dashboard" element={<Dashboard />} /> : null}
       </Routes>
+      <Footer />
     </Router>
   );
 }
