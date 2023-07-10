@@ -1,3 +1,4 @@
+// App.tsx
 import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -13,7 +14,6 @@ import About from './components/About';
 import Dashboard from './components/Dashboard';
 import { getFirestore } from 'firebase/firestore';
 import Footer from './components/Footer';
-import ReactLoading from 'react-loading';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_API_KEY,
@@ -46,36 +46,22 @@ function App() {
   return (
     <Router>
       <Navbar user={user} />
-      {authInitialized ? (
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero />
-                <About />
-              </>
-            }
-          />
-          <Route path="/hero" element={<Hero />} />
-          <Route
-            path="/dashboard"
-            element={user ? <Dashboard /> : <Navigate to="/" />}
-          />
-        </Routes>
-      ) : (
-        <div
-          className="flex justify-center items-center h-screen"
-          style={{ backgroundColor: '#004449' }}
-        >
-          <ReactLoading
-            type={'spin'}
-            color={'#fff'}
-            height={'20%'}
-            width={'20%'}
-          />
-        </div>
-      )}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Hero />
+              <About />
+            </>
+          }
+        />
+        <Route path="/hero" element={<Hero />} />
+        <Route
+          path="/dashboard"
+          element={user ? <Dashboard /> : <Navigate to="/" />}
+        />
+      </Routes>
       <Footer />
     </Router>
   );
