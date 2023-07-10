@@ -2,6 +2,8 @@
 
 GoalFlow is a web application built to help users track and achieve their goals effectively. This repository contains the source code and necessary documentation for the GoalFlow project.
 
+NOTE- This project is a work in progress. CRUD functionality is working, but new features will soon be added (See below).
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
