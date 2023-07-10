@@ -3,6 +3,7 @@ import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
+import '../hamburgers.css'
 
 const Navbar = ({ user }) => {
   const [nav, setNav] = useState(false);
