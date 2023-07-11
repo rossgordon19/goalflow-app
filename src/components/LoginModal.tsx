@@ -5,6 +5,8 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
   browserSessionPersistence,
   setPersistence,
 } from 'firebase/auth';
@@ -50,9 +52,6 @@ const LoginModal = ({ isOpen, closeModal }) => {
   };
 
   useEffect(() => {
-    setPersistence(auth, browserSessionPersistence).catch((error) => {
-      console.error(error);
-    });
     handleRedirectResult();
   }, [auth, closeModal, navigate]);
 
