@@ -14,8 +14,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
   const [nav, setNav] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
 
   const auth = getAuth();
   const navigate = useNavigate();
@@ -33,6 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
   };
 
   const openSignUpModal = () => {
+    setLoginModalOpen(false);
     setSignUpModalOpen(true);
   };
 
@@ -44,14 +43,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
     try {
       await signOut(auth);
       setUser(null);
-      setLoginModalOpen(false); // reset login modal state
-      setSignUpModalOpen(false); // reset signup modal state
+      setLoginModalOpen(false);
+      setSignUpModalOpen(false);
+      setNav(false);
       navigate('/');
     } catch (error) {
       console.error(error);
     }
   };
-  
 
   const handleLogoClick = () => {
     if (user !== null) {
@@ -138,13 +137,19 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
           <>
             <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
-              onClick={openLoginModal}
+              onClick={() => {
+                handleNavClick('/');
+                openLoginModal();
+              }}
             >
               Log In
             </li>
             <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
-              onClick={openSignUpModal}
+              onClick={() => {
+                handleNavClick('/');
+                openSignUpModal();
+              }}
             >
               Sign Up
             </li>
@@ -152,8 +157,16 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
         )}
       </ul>
 
-      <LoginModal isOpen={isLoginModalOpen} closeModal={closeLoginModal} />
-      <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} />
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        closeModal={closeLoginModal} 
+        openSignUpModal={openSignUpModal} 
+      />
+
+      <SignUpModal 
+        isOpen={isSignUpModalOpen} 
+        closeModal={closeSignUpModal} 
+      />
     </div>
   );
 };

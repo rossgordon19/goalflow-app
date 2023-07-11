@@ -16,7 +16,7 @@ const Spinner = () => {
   );
 };
 
-const LoginModal = ({ isOpen, closeModal }) => {
+const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -117,16 +117,15 @@ const LoginModal = ({ isOpen, closeModal }) => {
                 className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2"
                 disabled={loading}
               >
-                {loading ? <Spinner /> : 'Log in with Email'}
+                {loading ? <Spinner /> : 'Log In'}
               </button>
-              <div className="flex justify-center w-full">
-                <button
-                  onClick={signInAsGuest}
-                  className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center"
-                >
-                  Sign in as Guest
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={openSignUpModal}
+                className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2"
+              >
+                Sign Up
+              </button>
             </form>
           )}
           {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
@@ -139,6 +138,7 @@ const LoginModal = ({ isOpen, closeModal }) => {
 LoginModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
+  openSignUpModal: PropTypes.func.isRequired,
 };
 
 export default LoginModal;
