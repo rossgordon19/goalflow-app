@@ -6,6 +6,8 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from 'firebase/auth';
 import GoogleButton from 'react-google-button';
 import { useNavigate } from 'react-router-dom';
@@ -59,21 +61,37 @@ const LoginModal = ({ isOpen, closeModal }) => {
     }
   };
 
-  useEffect(() => {
-    const handleRedirectResult = async () => {
+  const handleRedirectResult = async () => {
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
+        closeModal();
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      setError(error.message);
+      setIsLoggingIn(false);
+    }
+  };
+
+  const handleEmailLinkSignIn = async () => {
+    const emailLink = window.location.href;
+
+    if (isSignInWithEmailLink(auth, emailLink)) {
       try {
-        const result = await getRedirectResult(auth);
-        if (result?.user) {
-          closeModal();
-          navigate('/dashboard');
-        }
+        await signInWithEmailLink(auth, email, emailLink);
+        closeModal();
+        navigate('/dashboard');
       } catch (error) {
         setError(error.message);
         setIsLoggingIn(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     handleRedirectResult();
+    handleEmailLinkSignIn();
   }, [auth, closeModal, navigate]);
 
   if (!isOpen) return null;
@@ -145,12 +163,6 @@ const LoginModal = ({ isOpen, closeModal }) => {
     </div>
   );
 };
-
-LoginModal.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  closeModal: PropTypes.func.isRequired,
-};
-
 
 LoginModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
