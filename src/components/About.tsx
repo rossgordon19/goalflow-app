@@ -8,7 +8,7 @@ const styles = {
   flexContainer:
     'w-full flex flex-col md:flex-row justify-center items-center md:space-x-4 flex-grow',
   section:
-    'bg-[#004449] px-4 py-8 rounded-md m-2 h-[50vh] md:h-[50vh] flex flex-col items-center justify-center w-full md:w-1/3',
+    'bg-[#004449] px-4 py-8 rounded-md m-2 h-[50vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] flex flex-col items-center justify-center w-full md:w-1/3',
   sectionTitle: 'text-[#fffffe] text-4xl mb-4',
   sectionText: 'text-[#d7ffc2]',
 };

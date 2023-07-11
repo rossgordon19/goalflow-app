@@ -132,25 +132,27 @@ const Dashboard: React.FC = () => {
         GoalFlow Dashboard
       </h1>
       <div className="bg-white rounded shadow-md p-4 w-full max-w-md">
-        <div className="flex items-center mb-4">
-          <input
-            type="text"
-            placeholder="Enter your goal here"
-            className="mr-2 p-2 flex-grow border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-            value={newGoal}
-            onChange={(e) => setNewGoal(e.target.value)}
-          />
-          <select
-            className="mr-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-            value={goalPeriod}
-            onChange={(e) => setGoalPeriod(e.target.value)}
-          >
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="year">This Year</option>
-          </select>
+        <div className="flex flex-col mb-4">
+          <div className="flex items-center mb-2">
+            <input
+              type="text"
+              placeholder="Enter your goal here"
+              className="mr-2 p-2 flex-grow border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={newGoal}
+              onChange={(e) => setNewGoal(e.target.value)}
+            />
+            <select
+              className="mr-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={goalPeriod}
+              onChange={(e) => setGoalPeriod(e.target.value)}
+            >
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
           <button
-            className="p-2 bg-[#004449]  text-white rounded hover:bg-[#0eff80] hover:text-black"
+            className="p-2 bg-[#004449] text-white rounded hover:bg-[#0eff80] hover:text-black"
             onClick={handleAddGoal}
           >
             Set Goal
