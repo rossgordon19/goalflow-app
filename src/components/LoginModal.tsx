@@ -1,4 +1,3 @@
-// LoginModal.tsx
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -35,7 +34,6 @@ const LoginModal = ({ isOpen, closeModal }) => {
       await signInWithRedirect(auth, provider);
     } catch (error) {
       setError(error.message);
-    } finally {
       setIsLoggingIn(false);
     }
   };
@@ -57,24 +55,27 @@ const LoginModal = ({ isOpen, closeModal }) => {
       navigate('/dashboard');
     } catch (error) {
       setError(error.message);
-    } finally {
       setIsLoggingIn(false);
     }
   };
 
   useEffect(() => {
-    const handleRedirectAuth = async () => {
+    const handleRedirectResult = async () => {
       try {
-        await getRedirectResult(auth);
-        closeModal();
-        navigate('/dashboard');
+        const result = await getRedirectResult(auth);
+        if (result !== null && result.credential) {
+          closeModal();
+          navigate('/dashboard');
+        }
       } catch (error) {
         setError(error.message);
+        setIsLoggingIn(false);
       }
     };
-
-    handleRedirectAuth();
-  }, []);
+  
+    handleRedirectResult();
+  }, [isLoggingIn, closeModal, navigate, auth]);
+  
 
   if (!isOpen) return null;
 
