@@ -50,12 +50,13 @@ const Navbar = ({ user }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      if (window.innerWidth < 768) handleClick(); // Modified here
+      if (window.innerWidth < 768) setNav(false);
       navigate('/');
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const handleLogoClick = () => {
     if (user !== null) {

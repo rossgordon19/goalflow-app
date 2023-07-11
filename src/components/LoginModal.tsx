@@ -59,22 +59,19 @@ const LoginModal = ({ isOpen, closeModal }) => {
     }
   };
 
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result !== null && result.credential) {
-          closeModal();
-          navigate('/dashboard');
-        }
-      } catch (error) {
-        setError(error.message);
-        setIsLoggingIn(false);
+  const handleRedirectResult = async () => {
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
+        closeModal();
+        navigate('/dashboard');
       }
-    };
+    } catch (error) {
+      setError(error.message);
+      setIsLoggingIn(false);
+    }
+  };
   
-    handleRedirectResult();
-  }, [isLoggingIn, closeModal, navigate, auth]);
   
 
   if (!isOpen) return null;
