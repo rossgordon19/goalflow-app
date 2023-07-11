@@ -127,7 +127,7 @@ const Dashboard: React.FC = () => {
   const yearGoals = goals.filter((goal) => goal.period === 'year');
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-[#004449] text-black">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-[#004449] text-black px-4 md:px-0">
       <h1 className="text-4xl font-bold mb-8 text-[#d7ffc2]">
         GoalFlow Dashboard
       </h1>
