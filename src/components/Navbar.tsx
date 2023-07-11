@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { useState, SetStateAction, Dispatch } from 'react';
+import { getAuth, signOut, User } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginModal from './LoginModal';
 import SignUpModal from './SignUpModal';
 import '../hamburgers.css';
 
-const Navbar = ({ user }) => {
+interface NavbarProps {
+  user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
   const [nav, setNav] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
 
   const auth = getAuth();
   const navigate = useNavigate();
@@ -35,22 +40,12 @@ const Navbar = ({ user }) => {
     setSignUpModalOpen(false);
   };
 
-  const handleEmailPasswordSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      setLoginModalOpen(false);
-      navigate('/dashboard');
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      if (window.innerWidth < 768) setNav(false);
+      setUser(null);
+      setLoginModalOpen(false); // reset login modal state
+      setSignUpModalOpen(false); // reset signup modal state
       navigate('/');
     } catch (error) {
       console.error(error);
@@ -67,7 +62,7 @@ const Navbar = ({ user }) => {
   };
 
   const handleNavClick = (route) => {
-    if (window.innerWidth < 768) handleClick(); // Modified here
+    if (window.innerWidth < 768) handleClick();
     navigate(route);
   };
 
@@ -98,7 +93,7 @@ const Navbar = ({ user }) => {
           ) : (
             <>
               <li onClick={openLoginModal}>Log In</li>
-              {/* <li onClick={openSignUpModal}>Sign Up</li> */}
+              <li onClick={openSignUpModal}>Sign Up</li>
             </>
           )}
         </ul>
@@ -147,18 +142,18 @@ const Navbar = ({ user }) => {
             >
               Log In
             </li>
-            {/* <li
+            <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={openSignUpModal}
             >
               Sign Up
-            </li> */}
+            </li>
           </>
         )}
       </ul>
 
       <LoginModal isOpen={isLoginModalOpen} closeModal={closeLoginModal} />
-      {/* <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} /> */}
+      <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} />
     </div>
   );
 };
