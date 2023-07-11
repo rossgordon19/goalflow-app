@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const Spinner = () => {
   return (
-    <div className="border-t-4 border-b-4 border-gray-200 rounded-full animate-spin w-6 h-6"></div>
+    <div
+      role="status"
+      aria-label="loading"
+      className="border-t-4 border-b-4 border-gray-200 rounded-full animate-spin w-6 h-6"
+    ></div>
   );
 };
 
@@ -41,16 +45,34 @@ const SignUpModal = ({ isOpen, closeModal }) => {
     }
   };
 
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current.focus();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed z-10 inset-0 overflow-y-auto">
+    <div
+      className="fixed z-10 inset-0 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-headline"
+      ref={modalRef}
+      tabIndex="-1"
+    >
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity" aria-hidden="true">
           <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
 
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
+        <span
+          className="hidden sm:inline-block sm:align-middle sm:h-screen"
+          aria-hidden="true"
+        >
           &#8203;
         </span>
 
@@ -64,36 +86,48 @@ const SignUpModal = ({ isOpen, closeModal }) => {
               <span className="sr-only">Close modal</span>
               <span aria-hidden="true">X</span>
             </button>
-            <h3 className="text-lg leading-6 font-medium text-[#d7ffc2]" id="modal-headline">
+            <h3
+              className="text-lg leading-6 font-medium text-[#d7ffc2]"
+              id="modal-headline"
+            >
               Sign Up to GoalFlow
             </h3>
             <form className="mt-4 w-64" onSubmit={signUpWithEmailPassword}>
+              <label htmlFor="email-input" className="sr-only">
+                Email
+              </label>
               <input
+                id="email-input"
                 className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={handleEmailChange}
                 required
-                aria-label="Email"
               />
+              <label htmlFor="password-input" className="sr-only">
+                Password
+              </label>
               <input
+                id="password-input"
                 className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
                 required
-                aria-label="Password"
               />
+              <label htmlFor="confirm-password-input" className="sr-only">
+                Confirm password
+              </label>
               <input
+                id="confirm-password-input"
                 className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
                 type="password"
                 placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
                 required
-                aria-label="Confirm password"
               />
               <button
                 type="submit"
@@ -103,7 +137,11 @@ const SignUpModal = ({ isOpen, closeModal }) => {
                 {loading ? <Spinner /> : 'Sign Up'}
               </button>
             </form>
-            {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+            {error && (
+              <p role="alert" className="text-red-500 text-xs mt-2">
+                {error}
+              </p>
+            )}
           </div>
         </div>
       </div>

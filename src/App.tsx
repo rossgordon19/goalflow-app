@@ -1,4 +1,3 @@
-// App.tsx
 import { useState, useEffect } from 'react';
 import {
   BrowserRouter as Router,
@@ -55,11 +54,13 @@ function App() {
               <About />
             </>
           }
+          aria-label="Home"
         />
-        <Route path="/hero" element={<Hero />} />
+        <Route path="/hero" element={<Hero />} aria-label="Hero" />
         <Route
           path="/dashboard"
           element={user ? <Dashboard /> : <Navigate to="/" />}
+          aria-label="Dashboard"
         />
       </Routes>
       <Footer />

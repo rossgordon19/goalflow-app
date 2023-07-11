@@ -12,7 +12,10 @@ import ReactLoading from 'react-loading';
 
 const Spinner = () => {
   return (
-    <div className="border-t-4 border-b-4 border-gray-200 rounded-full animate-spin w-6 h-6"></div>
+    <div
+      className="border-t-4 border-b-4 border-gray-200 rounded-full animate-spin w-6 h-6"
+      aria-label="Loading"
+    ></div>
   );
 };
 
@@ -61,7 +64,6 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
       setError(null);
     }
   }, [isOpen]);
-  
 
   if (!isOpen) return null;
   return (
@@ -69,7 +71,11 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
       <div className="fixed inset-0 transition-opacity" aria-hidden="true">
         <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
       </div>
-      <div className="inline-block align-bottom bg-[#004449] text-[#d7ffc2] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div
+        className="inline-block align-bottom bg-[#004449] text-[#d7ffc2] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+        role="dialog"
+        aria-labelledby="modal-headline"
+      >
         <div className="bg-[#004449] px-10 py-10 sm:px-6 flex flex-col items-center">
           <button
             onClick={closeModal}
@@ -91,6 +97,7 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
               color={'#fff'}
               height={'20%'}
               width={'20%'}
+              aria-label="Loading"
             />
           ) : (
             <form className="mt-4 w-64" onSubmit={handleEmailPasswordSubmit}>
@@ -128,7 +135,11 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
               </button>
             </form>
           )}
-          {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-xs mt-2" aria-live="polite">
+              {error}
+            </p>
+          )}
         </div>
       </div>
     </div>
