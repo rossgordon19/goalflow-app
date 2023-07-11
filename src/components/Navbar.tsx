@@ -98,7 +98,7 @@ const Navbar = ({ user }) => {
           ) : (
             <>
               <li onClick={openLoginModal}>Log In</li>
-              <li onClick={openSignUpModal}>Sign Up</li>
+              {/* <li onClick={openSignUpModal}>Sign Up</li> */}
             </>
           )}
         </ul>
@@ -147,18 +147,18 @@ const Navbar = ({ user }) => {
             >
               Log In
             </li>
-            <li
+            {/* <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={openSignUpModal}
             >
               Sign Up
-            </li>
+            </li> */}
           </>
         )}
       </ul>
 
       <LoginModal isOpen={isLoginModalOpen} closeModal={closeLoginModal} />
-      <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} />
+      {/* <SignUpModal isOpen={isSignUpModalOpen} closeModal={closeSignUpModal} /> */}
     </div>
   );
 };

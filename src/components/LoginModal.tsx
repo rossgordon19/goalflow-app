@@ -2,12 +2,9 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   getAuth,
-  signInWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
-  isSignInWithEmailLink,
-  signInWithEmailLink,
   browserSessionPersistence,
   setPersistence,
 } from 'firebase/auth';
@@ -22,9 +19,6 @@ const Spinner = () => {
 };
 
 const LoginModal = ({ isOpen, closeModal }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -36,27 +30,6 @@ const LoginModal = ({ isOpen, closeModal }) => {
     setIsLoggingIn(true);
     try {
       await signInWithRedirect(auth, provider);
-    } catch (error) {
-      setError(error.message);
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleEmailPasswordSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoggingIn(true);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      closeModal();
-      navigate('/dashboard');
     } catch (error) {
       setError(error.message);
       setIsLoggingIn(false);
@@ -76,27 +49,11 @@ const LoginModal = ({ isOpen, closeModal }) => {
     }
   };
 
-  const handleEmailLinkSignIn = async () => {
-    const emailLink = window.location.href;
-
-    if (isSignInWithEmailLink(auth, emailLink)) {
-      try {
-        await signInWithEmailLink(auth, email, emailLink);
-        closeModal();
-        navigate('/dashboard');
-      } catch (error) {
-        setError(error.message);
-        setIsLoggingIn(false);
-      }
-    }
-  };
-
   useEffect(() => {
     setPersistence(auth, browserSessionPersistence).catch((error) => {
       console.error(error);
     });
     handleRedirectResult();
-    handleEmailLinkSignIn();
   }, [auth, closeModal, navigate]);
 
   if (!isOpen) return null;
@@ -131,36 +88,9 @@ const LoginModal = ({ isOpen, closeModal }) => {
               width={'20%'}
             />
           ) : (
-            <form className="mt-4 w-64" onSubmit={handleEmailPasswordSubmit}>
-              <input
-                className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={handleEmailChange}
-                required
-                aria-label="Email"
-              />
-              <input
-                className="w-full p-2 border border-gray-300 rounded mb-2 text-black"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={handlePasswordChange}
-                required
-                aria-label="Password"
-              />
-              <button
-                type="submit"
-                className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2"
-                disabled={loading}
-              >
-                {loading ? <Spinner /> : 'Log in with Email'}
-              </button>
-              <div className="flex justify-center w-full">
-                <GoogleButton onClick={signInWithGoogle} />
-              </div>
-            </form>
+            <div className="flex justify-center w-full mt-4">
+              <GoogleButton onClick={signInWithGoogle} />
+            </div>
           )}
           {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
         </div>
