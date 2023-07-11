@@ -66,10 +66,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]">
+    <div className="sticky top-0 z-50 w-full h-[80px] flex items-center px-4 bg-[#004449] text-[#d7ffc2]" role="banner">
       <div className="flex justify-between w-full">
-        {/* Left side */}
-        <div className="flex items-center">
+        <div className="flex items-center" role="navigation">
           <div className="text-[#d7ffc2]">
             <Link to="/">
               <div
@@ -82,27 +81,26 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
           </div>
         </div>
 
-        {/* Right side */}
-        <ul className="hidden md:flex space-x-4 text-xl items-center cursor-pointer">
+        <ul className="hidden md:flex space-x-4 text-xl items-center cursor-pointer" role="navigation">
           {user ? (
             <>
-              <li onClick={() => handleNavClick('/dashboard')}>Dashboard</li>
-              <li onClick={handleLogout}>Log Out</li>
+              <li onClick={() => handleNavClick('/dashboard')} role="menuitem" tabIndex={0}>Dashboard</li>
+              <li onClick={handleLogout} role="menuitem" tabIndex={0}>Log Out</li>
             </>
           ) : (
             <>
-              <li onClick={openLoginModal}>Log In</li>
-              <li onClick={openSignUpModal}>Sign Up</li>
+              <li onClick={openLoginModal} role="menuitem" tabIndex={0}>Log In</li>
+              <li onClick={openSignUpModal} role="menuitem" tabIndex={0}>Sign Up</li>
             </>
           )}
         </ul>
       </div>
 
-      {/* Hamburger Menu */}
       <div onClick={handleClick} className="z-10 md:hidden">
         <button
           className={`hamburger hamburger--vortex ${nav ? 'is-active' : ''}`}
           type="button"
+          aria-label="Menu"
         >
           <span className="hamburger-box">
             <span className="hamburger-inner"></span>
@@ -110,25 +108,29 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <ul
         className={
           !nav
             ? 'hidden'
             : 'absolute text-2xl top-0 left-0 w-full h-screen bg-[#004449] text-[#d7ffc2] flex flex-col justify-center items-center'
         }
+        role="menu"
       >
         {user ? (
           <>
             <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={() => handleNavClick('/dashboard')}
+              role="menuitem"
+              tabIndex={0}
             >
               Dashboard
             </li>
             <li
               className="cursor-pointer py-6 text-5xl hover:scale-110 transform transition"
               onClick={handleLogout}
+              role="menuitem"
+              tabIndex={0}
             >
               Log Out
             </li>
@@ -141,6 +143,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
                 handleNavClick('/');
                 openLoginModal();
               }}
+              role="menuitem"
+              tabIndex={0}
             >
               Log In
             </li>
@@ -150,6 +154,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
                 handleNavClick('/');
                 openSignUpModal();
               }}
+              role="menuitem"
+              tabIndex={0}
             >
               Sign Up
             </li>
