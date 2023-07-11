@@ -59,20 +59,22 @@ const LoginModal = ({ isOpen, closeModal }) => {
     }
   };
 
-  const handleRedirectResult = async () => {
-    try {
-      const result = await getRedirectResult(auth);
-      if (result?.user) {
-        closeModal();
-        navigate('/dashboard');
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          closeModal();
+          navigate('/dashboard');
+        }
+      } catch (error) {
+        setError(error.message);
+        setIsLoggingIn(false);
       }
-    } catch (error) {
-      setError(error.message);
-      setIsLoggingIn(false);
-    }
-  };
-  
-  
+    };
+
+    handleRedirectResult();
+  }, [auth, closeModal, navigate]);
 
   if (!isOpen) return null;
 
@@ -143,6 +145,12 @@ const LoginModal = ({ isOpen, closeModal }) => {
     </div>
   );
 };
+
+LoginModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
+};
+
 
 LoginModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
