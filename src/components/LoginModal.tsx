@@ -8,6 +8,8 @@ import {
   getRedirectResult,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  browserSessionPersistence,
+  setPersistence,
 } from 'firebase/auth';
 import GoogleButton from 'react-google-button';
 import { useNavigate } from 'react-router-dom';
@@ -90,6 +92,9 @@ const LoginModal = ({ isOpen, closeModal }) => {
   };
 
   useEffect(() => {
+    setPersistence(auth, browserSessionPersistence).catch((error) => {
+      console.error(error);
+    });
     handleRedirectResult();
     handleEmailLinkSignIn();
   }, [auth, closeModal, navigate]);
