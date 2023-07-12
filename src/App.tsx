@@ -42,6 +42,10 @@ function App() {
     return () => unsubscribe();
   }, [auth]);
 
+  if (!authInitialized) {
+    return <div>Loading...</div>; // or some sort of loading spinner
+  }
+
   return (
     <Router>
       <Navbar user={user} setUser={setUser} />
