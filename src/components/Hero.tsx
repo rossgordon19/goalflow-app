@@ -5,7 +5,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 
-// Styles object
+
 const styles = {
   heroContainer:
     'flex flex-col justify-center items-center h-screen bg-[#004449] text-[#d7ffc2]',
