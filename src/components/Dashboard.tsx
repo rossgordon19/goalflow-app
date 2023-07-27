@@ -128,12 +128,12 @@ const Dashboard: React.FC = () => {
             <input
               type="text"
               placeholder="New goal"
-              className="border p-2 flex-grow"
+              className="border p-2 flex-grow cursor-pointer"
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
             />
             <select
-              className="border p-2"
+              className="border p-2 cursor-pointer"
               value={goalPeriod}
               onChange={(e) => setGoalPeriod(e.target.value)}
             >
@@ -142,7 +142,7 @@ const Dashboard: React.FC = () => {
               <option value="year">Year</option>
             </select>
             <button
-              className="w-full md:w-auto bg-blue-500 text-white p-2"
+              className="w-full md:w-auto bg-blue-500 text-white p-2 rounded-md"
               onClick={handleAddGoal}
             >
               Add
@@ -223,7 +223,7 @@ const GoalItem: React.FC<GoalItemProps> = ({
 
   return (
     <div
-      className={`flex justify-between items-center p-2 ${
+      className={`cursor-pointer flex justify-between items-center p-2 ${
         showIcons ? 'bg-gray-100' : ''
       } hover:bg-gray-100`}
       onClick={handleGoalItemClick}
