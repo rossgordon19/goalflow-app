@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  doc,
-  deleteDoc,
-  getDoc,
-} from 'firebase/firestore';
+import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from '../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt, faPen, faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +13,7 @@ const Dashboard: React.FC = () => {
   >([]);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editingGoalName, setEditingGoalName] = useState('');
-  const [loading, setLoading] = useState(true); // New state variable
+  const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
 
@@ -57,14 +49,12 @@ const Dashboard: React.FC = () => {
           name: string;
           completed: boolean;
           period: string;
-        }[] = querySnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            name: doc.data().name,
-            completed: doc.data().completed,
-            period: doc.data().period,
-          }))
-          .filter((goal) => !goal.completed);
+        }[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          name: doc.data().name,
+          completed: doc.data().completed,
+          period: doc.data().period,
+        }));
         setGoals(data);
         setLoading(false);
       }
@@ -122,212 +112,181 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const weekGoals = goals.filter((goal) => goal.period === 'week');
-  const monthGoals = goals.filter((goal) => goal.period === 'month');
-  const yearGoals = goals.filter((goal) => goal.period === 'year');
+  const activeGoals = goals.filter((goal) => !goal.completed);
+  const completedGoals = goals.filter((goal) => goal.completed);
+  const weekGoals = activeGoals.filter((goal) => goal.period === 'week');
+  const monthGoals = activeGoals.filter((goal) => goal.period === 'month');
+  const yearGoals = activeGoals.filter((goal) => goal.period === 'year');
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-[#004449] text-black px-4 md:px-0">
-      <h1 className="text-4xl font-bold mb-8 text-[#d7ffc2]">
-        GoalFlow Dashboard
-      </h1>
-      <div className="bg-white rounded shadow-md p-4 w-full max-w-md">
-        <div className="flex flex-col mb-4">
-          <div className="flex items-center mb-2">
+      <h1 className="text-4xl font-bold mb-8 text-[#d7ffc2]">Dashboard</h1>
+      <div className="bg-white rounded shadow-md p-4 w-full md:max-w-3xl lg:max-w-4xl xl:max-w-5xl">
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-2 md:flex-row md:space-x-4 md:space-y-0">
             <input
               type="text"
-              placeholder="Enter your goal here"
-              className="mr-2 p-2 flex-grow border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              placeholder="New goal"
+              className="border p-2 flex-grow"
               value={newGoal}
               onChange={(e) => setNewGoal(e.target.value)}
             />
             <select
-              className="mr-2 p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="border p-2"
               value={goalPeriod}
               onChange={(e) => setGoalPeriod(e.target.value)}
             >
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="year">This Year</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+              <option value="year">Year</option>
             </select>
+            <button
+              className="w-full md:w-auto bg-blue-500 text-white p-2"
+              onClick={handleAddGoal}
+            >
+              Add
+            </button>
           </div>
-          <button
-            className="p-2 bg-[#004449] text-white rounded hover:bg-[#0eff80] hover:text-black"
-            onClick={handleAddGoal}
-          >
-            Set Goal
-          </button>
+          <div className="space-y-4">
+            <div>
+              <h2 className="font-bold text-lg">This Week</h2>
+              <div className="space-y-2">
+                {weekGoals.map((goal) => (
+                  <GoalItem
+                    key={goal.id}
+                    goal={goal}
+                    updateGoal={updateGoal}
+                    deleteGoal={handleDeleteGoal}
+                    editGoal={handleEditGoal}
+                    editingGoalId={editingGoalId}
+                    editingGoalName={editingGoalName}
+                    setEditingGoalName={setEditingGoalName}
+                    saveEditedGoal={saveEditedGoal}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">This Month</h2>
+              <div className="space-y-2">
+                {monthGoals.map((goal) => (
+                  <GoalItem
+                    key={goal.id}
+                    goal={goal}
+                    updateGoal={updateGoal}
+                    deleteGoal={handleDeleteGoal}
+                    editGoal={handleEditGoal}
+                    editingGoalId={editingGoalId}
+                    editingGoalName={editingGoalName}
+                    setEditingGoalName={setEditingGoalName}
+                    saveEditedGoal={saveEditedGoal}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">This Year</h2>
+              <div className="space-y-2">
+                {yearGoals.map((goal) => (
+                  <GoalItem
+                    key={goal.id}
+                    goal={goal}
+                    updateGoal={updateGoal}
+                    deleteGoal={handleDeleteGoal}
+                    editGoal={handleEditGoal}
+                    editingGoalId={editingGoalId}
+                    editingGoalName={editingGoalName}
+                    setEditingGoalName={setEditingGoalName}
+                    saveEditedGoal={saveEditedGoal}
+                  />
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="font-bold text-lg">Completed Goals</h2>
+              <div className="space-y-2">
+                {completedGoals.map((goal) => (
+                  <GoalItem
+                    key={goal.id}
+                    goal={goal}
+                    updateGoal={updateGoal}
+                    deleteGoal={handleDeleteGoal}
+                    editGoal={handleEditGoal}
+                    editingGoalId={editingGoalId}
+                    editingGoalName={editingGoalName}
+                    setEditingGoalName={setEditingGoalName}
+                    saveEditedGoal={saveEditedGoal}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {loading ? (
-          <p className="text-center text-xl text-gray-600">Loading...</p>
-        ) : goals.length === 0 ? (
-          <p className="text-center text-xl text-gray-600">
-            You currently have no set goals.
-          </p>
-        ) : (
-          <>
-            <h2 className="font-bold text-2xl">This Week:</h2>
-            <ul className="space-y-2">
-              {weekGoals.map((goal) => (
-                <li
-                  key={goal.id}
-                  className={`flex justify-between items-center p-2 ${
-                    goal.completed ? 'line-through' : ''
-                  }`}
-                >
-                  <div>
-                    <input
-                      type="checkbox"
-                      checked={goal.completed}
-                      onChange={() => updateGoal(goal.id)}
-                      className="mr-2"
-                    />
-                    {editingGoalId === goal.id ? (
-                      <input
-                        type="text"
-                        value={editingGoalName}
-                        onChange={(e) => setEditingGoalName(e.target.value)}
-                        className="mr-2"
-                      />
-                    ) : (
-                      <span>{goal.name}</span>
-                    )}
-                  </div>
-                  <div>
-                    {editingGoalId === goal.id ? (
-                      <button onClick={saveEditedGoal}>
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faCheck} />
-                        </div>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEditGoal(goal.id, goal.name)}
-                      >
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faPen} />
-                        </div>
-                      </button>
-                    )}
-                    <button onClick={() => handleDeleteGoal(goal.id)}>
-                      <div className="icon-container mr-4">
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </div>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <h2 className="font-bold text-2xl">This Month:</h2>
-            <ul className="space-y-2">
-              {monthGoals.map((goal) => (
-                <li
-                  key={goal.id}
-                  className={`flex justify-between items-center p-2 ${
-                    goal.completed ? 'line-through' : ''
-                  }`}
-                >
-                  <div>
-                    <input
-                      type="checkbox"
-                      checked={goal.completed}
-                      onChange={() => updateGoal(goal.id)}
-                      className="mr-2"
-                    />
-                    {editingGoalId === goal.id ? (
-                      <input
-                        type="text"
-                        value={editingGoalName}
-                        onChange={(e) => setEditingGoalName(e.target.value)}
-                        className="mr-2"
-                      />
-                    ) : (
-                      <span>{goal.name}</span>
-                    )}
-                  </div>
-                  <div>
-                    {editingGoalId === goal.id ? (
-                      <button onClick={saveEditedGoal}>
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faCheck} />
-                        </div>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEditGoal(goal.id, goal.name)}
-                      >
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faPen} />
-                        </div>
-                      </button>
-                    )}
-                    <button onClick={() => handleDeleteGoal(goal.id)}>
-                      <div className="icon-container mr-4">
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </div>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <h2 className="font-bold text-2xl">This Year:</h2>
-            <ul className="space-y-2">
-              {yearGoals.map((goal) => (
-                <li
-                  key={goal.id}
-                  className={`flex justify-between items-center p-2 ${
-                    goal.completed ? 'line-through' : ''
-                  }`}
-                >
-                  <div>
-                    <input
-                      type="checkbox"
-                      checked={goal.completed}
-                      onChange={() => updateGoal(goal.id)}
-                      className="mr-2"
-                    />
-                    {editingGoalId === goal.id ? (
-                      <input
-                        type="text"
-                        value={editingGoalName}
-                        onChange={(e) => setEditingGoalName(e.target.value)}
-                        className="mr-2"
-                      />
-                    ) : (
-                      <span>{goal.name}</span>
-                    )}
-                  </div>
-                  <div>
-                    {editingGoalId === goal.id ? (
-                      <button onClick={saveEditedGoal}>
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faCheck} />
-                        </div>
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleEditGoal(goal.id, goal.name)}
-                      >
-                        <div className="icon-container mr-4">
-                          <FontAwesomeIcon icon={faPen} />
-                        </div>
-                      </button>
-                    )}
-                    <button onClick={() => handleDeleteGoal(goal.id)}>
-                      <div className="icon-container mr-4">
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </div>
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
       </div>
+      <div className="mt-4 text-[#d7ffc2]">Number of completed goals: {completedGoals.length}</div>
+    </div>
+  );
+};
+
+interface GoalItemProps {
+  goal: {
+    id: string;
+    name: string;
+    completed: boolean;
+    period: string;
+  };
+  updateGoal: (goalId: string) => Promise<void>;
+  deleteGoal: (goalId: string) => Promise<void>;
+  editGoal: (goalId: string, goalName: string) => void;
+  editingGoalId: string | null;
+  editingGoalName: string;
+  setEditingGoalName: React.Dispatch<React.SetStateAction<string>>;
+  saveEditedGoal: () => Promise<void>;
+}
+
+const GoalItem: React.FC<GoalItemProps> = ({
+  goal,
+  updateGoal,
+  deleteGoal,
+  editGoal,
+  editingGoalId,
+  editingGoalName,
+  setEditingGoalName,
+  saveEditedGoal,
+}) => {
+  return (
+    <div className="flex justify-between items-center border p-2">
+      {editingGoalId === goal.id ? (
+        <>
+          <input
+            type="text"
+            className="border p-2 flex-grow"
+            value={editingGoalName}
+            onChange={(e) => setEditingGoalName(e.target.value)}
+          />
+          <button
+            className="ml-2 p-2 bg-green-500 text-white"
+            onClick={saveEditedGoal}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </button>
+        </>
+      ) : (
+        <>
+          <p className={goal.completed ? 'line-through' : ''}>{goal.name}</p>
+          <div className="space-x-2">
+            <button className="p-2" onClick={() => updateGoal(goal.id)}>
+              <FontAwesomeIcon icon={faCheck} />
+            </button>
+            <button className="p-2" onClick={() => editGoal(goal.id, goal.name)}>
+              <FontAwesomeIcon icon={faPen} />
+            </button>
+            <button className="p-2" onClick={() => deleteGoal(goal.id)}>
+              <FontAwesomeIcon icon={faTrashAlt} />
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
