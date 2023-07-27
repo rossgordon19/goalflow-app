@@ -42,19 +42,22 @@ const About = () => {
           </p>
         </article>
         <article className={styles.section}>
-          <h2 className={styles.sectionTitle}>Set Goal</h2>
+          <p className={styles.sectionText}>Coming Soon</p>
+          <h2 className={styles.sectionTitle}>Reminders</h2>
           <p className={styles.sectionText}>
-            Turn dreams into tangible goals with GoalFlow. We help you set
-            smart, realistic, and achievable goals. Define what you want to
-            accomplish and lay out the steps to get there.
+            Stay on track with GoalFlow's reminder functionality. You can set
+            reminders to get email alerts to check in with yourself on goal
+            progress. Make your goals a priority and never lose sight of them.
           </p>
         </article>
         <article className={styles.section}>
-          <h2 className={styles.sectionTitle}>Achieve</h2>
+          <p className={styles.sectionText}>Coming Soon</p>
+          <h2 className={styles.sectionTitle}>Share</h2>
           <p className={styles.sectionText}>
-            Work your way towards your goals with GoalFlow, your partner in
-            achievement. Track your progress, celebrate your milestones, and
-            realize your dreams one step at a time.
+            Share your accomplishments with others through GoalFlow. Our sharing
+            functionality lets you celebrate your milestones by showcasing your
+            completed goals. Inspire others on their journey and get inspired by
+            the achievements shared by others.
           </p>
         </article>
       </section>
