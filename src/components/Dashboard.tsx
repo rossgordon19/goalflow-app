@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc, getDoc } from 'firebase/firestore';
 import { db } from '../App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt, faPen, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faPen, faCheck, faUndo } from '@fortawesome/free-solid-svg-icons';
 import { getAuth } from 'firebase/auth';
+
 
 const Dashboard: React.FC = () => {
   const [newGoal, setNewGoal] = useState('');
@@ -152,17 +153,7 @@ const Dashboard: React.FC = () => {
               <h2 className="font-bold text-lg">This Week</h2>
               <div className="space-y-2">
                 {weekGoals.map((goal) => (
-                  <GoalItem
-                    key={goal.id}
-                    goal={goal}
-                    updateGoal={updateGoal}
-                    deleteGoal={handleDeleteGoal}
-                    editGoal={handleEditGoal}
-                    editingGoalId={editingGoalId}
-                    editingGoalName={editingGoalName}
-                    setEditingGoalName={setEditingGoalName}
-                    saveEditedGoal={saveEditedGoal}
-                  />
+                  <GoalItem key={goal.id} goal={goal} updateGoal={updateGoal} deleteGoal={handleDeleteGoal} editGoal={handleEditGoal} editingGoalId={editingGoalId} editingGoalName={editingGoalName} setEditingGoalName={setEditingGoalName} saveEditedGoal={saveEditedGoal} />
                 ))}
               </div>
             </div>
@@ -170,17 +161,7 @@ const Dashboard: React.FC = () => {
               <h2 className="font-bold text-lg">This Month</h2>
               <div className="space-y-2">
                 {monthGoals.map((goal) => (
-                  <GoalItem
-                    key={goal.id}
-                    goal={goal}
-                    updateGoal={updateGoal}
-                    deleteGoal={handleDeleteGoal}
-                    editGoal={handleEditGoal}
-                    editingGoalId={editingGoalId}
-                    editingGoalName={editingGoalName}
-                    setEditingGoalName={setEditingGoalName}
-                    saveEditedGoal={saveEditedGoal}
-                  />
+                  <GoalItem key={goal.id} goal={goal} updateGoal={updateGoal} deleteGoal={handleDeleteGoal} editGoal={handleEditGoal} editingGoalId={editingGoalId} editingGoalName={editingGoalName} setEditingGoalName={setEditingGoalName} saveEditedGoal={saveEditedGoal} />
                 ))}
               </div>
             </div>
@@ -188,35 +169,15 @@ const Dashboard: React.FC = () => {
               <h2 className="font-bold text-lg">This Year</h2>
               <div className="space-y-2">
                 {yearGoals.map((goal) => (
-                  <GoalItem
-                    key={goal.id}
-                    goal={goal}
-                    updateGoal={updateGoal}
-                    deleteGoal={handleDeleteGoal}
-                    editGoal={handleEditGoal}
-                    editingGoalId={editingGoalId}
-                    editingGoalName={editingGoalName}
-                    setEditingGoalName={setEditingGoalName}
-                    saveEditedGoal={saveEditedGoal}
-                  />
+                  <GoalItem key={goal.id} goal={goal} updateGoal={updateGoal} deleteGoal={handleDeleteGoal} editGoal={handleEditGoal} editingGoalId={editingGoalId} editingGoalName={editingGoalName} setEditingGoalName={setEditingGoalName} saveEditedGoal={saveEditedGoal} />
                 ))}
               </div>
             </div>
             <div>
               <h2 className="font-bold text-lg">Completed Goals</h2>
-              <div className="space-y-2">
+              <div>
                 {completedGoals.map((goal) => (
-                  <GoalItem
-                    key={goal.id}
-                    goal={goal}
-                    updateGoal={updateGoal}
-                    deleteGoal={handleDeleteGoal}
-                    editGoal={handleEditGoal}
-                    editingGoalId={editingGoalId}
-                    editingGoalName={editingGoalName}
-                    setEditingGoalName={setEditingGoalName}
-                    saveEditedGoal={saveEditedGoal}
-                  />
+                  <GoalItem key={goal.id} goal={goal} updateGoal={updateGoal} deleteGoal={handleDeleteGoal} editGoal={handleEditGoal} editingGoalId={editingGoalId} editingGoalName={editingGoalName} setEditingGoalName={setEditingGoalName} saveEditedGoal={saveEditedGoal} />
                 ))}
               </div>
             </div>
@@ -254,8 +215,20 @@ const GoalItem: React.FC<GoalItemProps> = ({
   setEditingGoalName,
   saveEditedGoal,
 }) => {
+  const [showIcons, setShowIcons] = useState(false);
+
+  const handleGoalItemClick = () => {
+    setShowIcons((prev) => !prev);
+  };
+
   return (
-    <div className="flex justify-between items-center border p-2">
+    <div
+      className={`flex justify-between items-center p-2 ${
+        showIcons ? 'bg-gray-100' : ''
+      } hover:bg-gray-100`}
+      onClick={handleGoalItemClick}
+      title={editingGoalId === goal.id ? '' : goal.completed ? 'Edit, Delete' : 'Done'}
+    >
       {editingGoalId === goal.id ? (
         <>
           <input
@@ -264,25 +237,24 @@ const GoalItem: React.FC<GoalItemProps> = ({
             value={editingGoalName}
             onChange={(e) => setEditingGoalName(e.target.value)}
           />
-          <button
-            className="ml-2 p-2 bg-green-500 text-white"
-            onClick={saveEditedGoal}
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
+          <div className={`space-x-2 ${showIcons ? 'visible' : 'hidden'}`}>
+            <button className="p-2" onClick={saveEditedGoal}>
+              <FontAwesomeIcon icon={faCheck} title="Done" />
+            </button>
+          </div>
         </>
       ) : (
         <>
           <p className={goal.completed ? 'line-through' : ''}>{goal.name}</p>
-          <div className="space-x-2">
+          <div className={`space-x-2 ${showIcons ? 'visible' : 'hidden'}`}>
             <button className="p-2" onClick={() => updateGoal(goal.id)}>
-              <FontAwesomeIcon icon={faCheck} />
+              <FontAwesomeIcon icon={goal.completed ? faUndo : faCheck} title={goal.completed ? 'Undo' : 'Done'} />
             </button>
             <button className="p-2" onClick={() => editGoal(goal.id, goal.name)}>
-              <FontAwesomeIcon icon={faPen} />
+              <FontAwesomeIcon icon={faPen} title="Edit" />
             </button>
             <button className="p-2" onClick={() => deleteGoal(goal.id)}>
-              <FontAwesomeIcon icon={faTrashAlt} />
+              <FontAwesomeIcon icon={faTrashAlt} title="Delete" />
             </button>
           </div>
         </>
