@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getAuth, signInWithEmailAndPassword, signInAnonymously, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signInAnonymously,
+  GoogleAuthProvider,
+  signInWithRedirect,
+} from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import ReactLoading from 'react-loading';
 
@@ -25,18 +31,6 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithRedirect(auth, provider);
-  };
-
-  const signInAsGuest = async () => {
-    setIsLoggingIn(true);
-    try {
-      await signInAnonymously(auth);
-      closeModal();
-      navigate('/dashboard');
-    } catch (error) {
-      setError(error.message);
-      setIsLoggingIn(false);
-    }
   };
 
   const handleEmailChange = (e) => {
@@ -128,10 +122,11 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
               <button
                 type="button"
                 onClick={signInWithGoogle}
-                className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2"
+                className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2 md:block hidden"
               >
                 Sign In with Google
               </button>
+
               <button
                 type="button"
                 onClick={openSignUpModal}
