@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  signInAnonymously,
-  browserSessionPersistence,
-  setPersistence,
-} from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signInAnonymously, GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import ReactLoading from 'react-loading';
 
@@ -27,6 +21,11 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const auth = getAuth();
   const navigate = useNavigate();
+
+  const signInWithGoogle = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithRedirect(auth, provider);
+  };
 
   const signInAsGuest = async () => {
     setIsLoggingIn(true);
@@ -125,6 +124,13 @@ const LoginModal = ({ isOpen, closeModal, openSignUpModal }) => {
                 disabled={loading}
               >
                 {loading ? <Spinner /> : 'Log In'}
+              </button>
+              <button
+                type="button"
+                onClick={signInWithGoogle}
+                className="w-full p-2 bg-[#d7ffc2] text-black rounded flex justify-center items-center mb-2"
+              >
+                Sign In with Google
               </button>
               <button
                 type="button"

@@ -43,14 +43,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, setUser }) => {
     try {
       await signOut(auth);
       setUser(null);
-      setLoginModalOpen(false);
-      setSignUpModalOpen(false);
-      setNav(false);
-      navigate('/');
+      navigate('/'); // Redirect to the homepage
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const handleLogoClick = () => {
     if (user !== null) {
