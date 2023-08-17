@@ -5,7 +5,13 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  User,
+  getRedirectResult,
+} from 'firebase/auth';
+import ReactLoading from 'react-loading';
 import { initializeApp } from 'firebase/app';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -39,11 +45,45 @@ function App() {
       setAuthInitialized(true);
     });
 
+    // Handle the redirect result for Google Sign-In
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result.user) {
+          setUser(result.user);
+          // Redirect to the dashboard after successful login
+          window.location.href = '/dashboard';
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
     return () => unsubscribe();
   }, [auth]);
 
   if (!authInitialized) {
-    return <div>Loading...</div>; // or some sort of loading spinner
+    return (
+      <div className="fixed z-10 inset-0 overflow-y-auto flex items-center justify-center">
+        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div
+          className="inline-block align-middle bg-[#004449] text-[#d7ffc2] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          role="dialog"
+          aria-labelledby="modal-headline"
+        >
+          <div className="bg-[#004449] px-10 py-10 sm:px-6 flex flex-col items-center">
+            <ReactLoading
+              type={'spin'}
+              color={'#fff'}
+              height={'20%'}
+              width={'20%'}
+              aria-label="Loading"
+            />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
